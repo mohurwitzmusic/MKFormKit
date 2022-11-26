@@ -5,7 +5,6 @@ open class MKFormToggleCell: MKFormCell {
     
     open var toggle = UISwitch()
     open var toggleValueChangedHandler: ((MKFormToggleCell) -> Void)?
-    open var cancellable: AnyCancellable?
 
     open override func setup() {
         selectionStyle = .none
@@ -22,25 +21,6 @@ open class MKFormToggleCell: MKFormCell {
         return self
     }
     
-    @discardableResult
-    open func onObjectWillChange<T: ObservableObject>(_ object: T, handler: @escaping ((T, MKFormToggleCell) -> Void)) -> Self {
-        self.cancellable = object.objectWillChange
-            .sink {  [weak object, weak self] _ in
-                guard let object, let self else { return }
-                handler(object, self)
-            }
-        return self
-    }
-    
-
-    @discardableResult
-    open func onConfigurationUpdate<T: AnyObject>(source: T, _ handler: @escaping((T, MKFormToggleCell, UICellConfigurationState) -> Void)) -> Self {
-        self.configurationUpdateHandler = { [weak source] cell, state in
-            guard let source else { return }
-            handler(source, cell as! MKFormToggleCell, state)
-        }
-        return self
-    }
     
     @objc func _valueChanged() {
         toggleValueChangedHandler?(self)

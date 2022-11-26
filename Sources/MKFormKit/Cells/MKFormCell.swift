@@ -3,7 +3,7 @@ import Combine
 
 
 
-open class MKFormCell: UITableViewCell {
+open class MKFormCell: UITableViewCell, MKFormCellObservable, MKFormListCellConfigurable {
     
     private var didConfigure = false
 
@@ -45,6 +45,8 @@ open class MKFormCell: UITableViewCell {
             setNeedsLayout()
         }
     }
+    
+    open var cancellable: AnyCancellable?
     
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -140,11 +142,11 @@ open class MKFormCell: UITableViewCell {
 
 public extension MKFormCell {
     
-    convenience init(text: String, secondaryText: String? = nil, imageSystemName: String? = nil) {
+    convenience init(title: String, subtitle: String? = nil, imageSystemName: String? = nil) {
         self.init(style: .default, reuseIdentifier: nil)
         self.contentConfiguration = self.defaultContentConfiguration()
-            .withText(text)
-            .withSecondaryText(secondaryText ?? "")
+            .withText(title)
+            .withSecondaryText(subtitle ?? "")
             .withImage(systemName: imageSystemName ?? "")
     }
 

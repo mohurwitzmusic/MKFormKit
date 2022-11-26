@@ -5,7 +5,6 @@ open class MKFormColorPickerCell: MKFormCell {
     
     private var lastSentColor: UIColor?
     public let colorWell = UIColorWell()
-    public var cancellable: AnyCancellable?
     public var colorWellValueChangedHandler: ((MKFormColorPickerCell) -> Void)?
     
     open override func setup() {
@@ -14,40 +13,12 @@ open class MKFormColorPickerCell: MKFormCell {
         colorWell.addTarget(self, action: #selector(_colorWellValueChanged), for: .valueChanged)
     }
 
-    @discardableResult
-    open func onObjectWillChange<T: ObservableObject>(_ object: T, handler: @escaping ((T, MKFormColorPickerCell) -> Void)) -> Self {
-        self.cancellable = object.objectWillChange
-            .sink {  [weak object, weak self] _ in
-                guard let object, let self else { return }
-                handler(object, self)
-            }
-        return self
-    }
- 
-    public convenience init<T: ObservableObject>(observing object: T, handler: @escaping ((T, MKFormColorPickerCell) -> Void)) {
-        self.init(style: .default, reuseIdentifier: nil)
-        cancellable = object.objectWillChange.sink { [weak object, weak self] _ in
-            if let object, let self {
-                handler(object, self)
-            }
-        }
-    }
-    
+
     @discardableResult
     open func onColorWellValueChanged<T: AnyObject>(target: T, handler: @escaping ((T, MKFormColorPickerCell) -> Void)) -> Self {
         self.colorWellValueChangedHandler =  { [weak target] cell in
             guard let target else { return }
             handler(target, cell)
-        }
-        return self
-    }
-    
-    
-    @discardableResult
-    open func onConfigurationUpdate<T: AnyObject>(source: T, _ handler: @escaping((T, MKFormColorPickerCell, UICellConfigurationState) -> Void)) -> Self {
-        self.configurationUpdateHandler = { [weak source] cell, state in
-            guard let source else { return }
-            handler(source, cell as! MKFormColorPickerCell, state)
         }
         return self
     }

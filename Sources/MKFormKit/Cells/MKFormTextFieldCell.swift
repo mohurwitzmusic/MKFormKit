@@ -11,7 +11,6 @@ public class MKFormTextFieldCell: MKFormCell, UITextFieldDelegate {
     
     public let configuration: Configuration
     public let textField = UITextField()
-    public var cancellable: AnyCancellable?
     public var textFieldShouldReturnHandler: ((MKFormTextFieldCell) -> Bool)?
     public var textFieldShouldChangeCharactersInRangeHandler: ((MKFormTextFieldCell, NSRange, String) -> Bool)?
     public var textFieldDidEndEditingHandler: ((MKFormTextFieldCell) -> Void)?
@@ -46,16 +45,6 @@ public class MKFormTextFieldCell: MKFormCell, UITextFieldDelegate {
         textField.delegate = self
     }
 
-    
-    @discardableResult
-    public func onObjectWillChange<T: ObservableObject>(_ object: T, handler: @escaping ((T, MKFormTextFieldCell) -> Void)) -> Self {
-        cancellable = object.objectWillChange.sink { [weak self, weak object] _ in
-            guard let self, let object else { return }
-            handler(object, self)
-        }
-        return self
-    }
-    
     @discardableResult
     public func onTextFieldShouldReturn<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell) -> Bool)) -> Self {
         self.textFieldShouldReturnHandler = { [weak target, weak self] _ in
@@ -93,18 +82,15 @@ public class MKFormTextFieldCell: MKFormCell, UITextFieldDelegate {
         }
         return self
     }
-    
-    @discardableResult
-    public func onConfigurationUpdate<T: AnyObject>(source: T, handler: @escaping ((T, MKFormTextFieldCell) -> Void)) -> Self {
-        self.configurationUpdateHandler = { [weak source, weak self] _, _ in
-            guard let self, let source else { return }
-            handler(source, self)
-        }
-        return self
-    }
-    
+
+        
     public override func updateConfiguration(using state: UICellConfigurationState) {
-        return
+        switch configuration {
+        case .fullWidth:
+            self.textField.text = "Hoop"
+        case .accessory:
+            super.updateConfiguration(using: state)
+        }
     }
 }
 

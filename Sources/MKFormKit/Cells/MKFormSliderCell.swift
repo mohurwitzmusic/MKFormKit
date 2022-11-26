@@ -7,7 +7,6 @@ open class MKFormSliderCell: MKFormCell {
     
     open var sliderValueChangedHandler: ((MKFormSliderCell) -> Void)?
     open var sliderTouchesEndedHandler: ((MKFormSliderCell) -> Void)?
-    open var cancellable: AnyCancellable?
     
     open override func setup() {
         selectionStyle = .none
@@ -16,16 +15,6 @@ open class MKFormSliderCell: MKFormCell {
         slider.addTarget(self, action: #selector(_sliderValueChanged), for: .valueChanged)
         slider.addTarget(self, action: #selector(_sliderTouchUp), for: .touchUpInside)
         slider.addTarget(self, action: #selector(_sliderTouchUp), for: .touchUpOutside)
-    }
-    
-    
-    public convenience init<T: ObservableObject>(observing object: T, handler: @escaping ((T, MKFormSliderCell) -> Void)) {
-        self.init()
-        self.cancellable = object.objectWillChange
-            .sink { [weak object] _ in
-                guard let object else { return }
-                handler(object, self)
-            }
     }
     
     
@@ -46,15 +35,7 @@ open class MKFormSliderCell: MKFormCell {
         }
         return self
     }
-    
-    @discardableResult
-    open func configuration(_ handler: @escaping((MKFormSliderCell, UICellConfigurationState) -> Void)) -> Self {
-        self.configurationUpdateHandler = { cell, state in
-            handler(cell as! MKFormSliderCell, state)
-        }
-        return self
-    }
-    
+
     @objc private func _sliderValueChanged() {
         sliderValueChangedHandler?(self)
     }
