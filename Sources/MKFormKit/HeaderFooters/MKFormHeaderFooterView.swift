@@ -1,9 +1,9 @@
 import UIKit
 import Combine
 
-open class MKFormHeaderFooterView: UITableViewHeaderFooterView {
+open class MKFormHeaderFooterView: UITableViewHeaderFooterView, UpdatesConfigurationOnObjectWillChange {
     
-    public var cancellable: AnyCancellable?
+    public var observedObject: AnyCancellable?
     
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -18,26 +18,6 @@ open class MKFormHeaderFooterView: UITableViewHeaderFooterView {
     /// Override to perform any configuration after initialization. The default implementation does nothing.
     
     open func setup() { }
-
-    @discardableResult
-    open func updateConfiguration<T: AnyObject>(source: T, _ handler: @escaping ((T, UITableViewHeaderFooterView, UIViewConfigurationState) -> Void)) -> Self {
-        self.configurationUpdateHandler = { [weak source] view, state in
-            guard let source else { return }
-            handler(source, view, state)
-        }
-        return self
-    }
-    
-    @discardableResult
-    public func onObjectWillChange<T: ObservableObject>(_ object: T, handler:  @escaping ((T, MKFormHeaderFooterView) -> Void)) -> Self {
-        cancellable = object.objectWillChange
-            .sink { [weak self, weak object] _ in
-                guard let self, let object else { return }
-                handler(object, self)
-            }
-        return self
-    }
-    
     
 }
 

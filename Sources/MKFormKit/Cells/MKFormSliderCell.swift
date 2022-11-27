@@ -11,7 +11,13 @@ open class MKFormSliderCell: MKFormCell {
     open override func setup() {
         selectionStyle = .none
         contentView.addSubview(slider)
-        slider.constrainToLayoutGuide(contentView.layoutMarginsGuide)
+        slider.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            slider.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
+            slider.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
+            slider.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
+            slider.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor)
+        ])
         slider.addTarget(self, action: #selector(_sliderValueChanged), for: .valueChanged)
         slider.addTarget(self, action: #selector(_sliderTouchUp), for: .touchUpInside)
         slider.addTarget(self, action: #selector(_sliderTouchUp), for: .touchUpOutside)

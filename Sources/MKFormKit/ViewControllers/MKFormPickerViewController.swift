@@ -1,126 +1,134 @@
 import UIKit
 
-open class MKPickerFormViewController<T: Hashable>: UICollectionViewController {
+public class MKFormPickerViewController<T: Equatable>: UITableViewController {
     
-    open var form: MKPickerForm<T> {
-        didSet {
-            refreshStaticContent()
-            reloadCells(animated: false)
+    public init(style: UITableView.Style = .insetGrouped, items: [T], selected: T, cellConfiguration: @escaping ((T) -> UIListContentConfiguration), onSelection: @escaping (T) -> Void) {
+        guard items.contains(selected) else {
+            fatalError()
+        }
+        self.items = items
+        self.selectedItem = selected
+        self.cellConfiguration = cellConfiguration
+        self.onSelection = onSelection
+        super.init(style: style)
+    }
+    
+    public enum SelectionTrigger {
+        case continuously
+        case onDisappear
+    }
+    
+    private var _undoManager: UndoManager?
+    
+    public override var undoManager: UndoManager? {
+        _undoManager
+    }
+    
+    
+    private var items: [T] = []
+    private var selectedItem: T!
+    private var cellConfiguration: ((T) -> UIListContentConfiguration) = { _ in return .cell() }
+    private var onSelection: ((T) -> Void)?
+    public var selectionTrigger = SelectionTrigger.continuously
+    public var onWillDissapear: ((T) -> Void)?
+    
+    public func enableUndoRegistration(_ enabled: Bool) {
+        if enabled {
+            _undoManager = .init()
+            addUndoButtons(undoManager: undoManager!)
+        } else {
+            _undoManager = nil
+            toolbarItems = []
         }
     }
     
-    open var selectionConfirmationHandler: ((MKPickerForm<T>) -> ())?
-    
-    public enum SectionIdentifier: Hashable {
-        case main
+    public override func numberOfSections(in tableView: UITableView) -> Int {
+        1
     }
     
-    public typealias ItemIdentifier = MKPickerForm<T>.ListItem
-    public typealias Snapshot = NSDiffableDataSourceSnapshot<SectionIdentifier, ItemIdentifier>
-    public typealias DiffableDataSource = UICollectionViewDiffableDataSource<SectionIdentifier, ItemIdentifier>
-    open var diffableDataSource: DiffableDataSource!
-    
-    //MARK: - Initialization
-    
-    public init(form: MKPickerForm<T>) {
-        self.form = form
-        var listConfig = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
-        listConfig.backgroundColor = .clear
-        let layout = UICollectionViewCompositionalLayout.list(using: listConfig)
-        super.init(collectionViewLayout: layout)
+    public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        items.count
     }
+    
+    public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell") ?? UITableViewCell()
+        cell.contentConfiguration = cellConfiguration(items[indexPath.row])
+        cell.accessoryType = items[indexPath.row] == selectedItem ? .checkmark : .none
+        return cell
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if let index = items.firstIndex(of: selectedItem) {
+            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: false)
+        }
+    }
+    
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        onWillDissapear?(selectedItem)
+    }
+    
     
     public required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        fatalError()
     }
     
-    //MARK: - Lifecycle
-    
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-        configureDataSource()
-        configureNavigationBar()
-        configureToolbar()
-        refreshStaticContent()
-        reloadCells(animated: false)
-    }
-    
-    open override func viewWillDisappear(_ animated: Bool) {
-        selectionConfirmationHandler?(form)
-        super.viewWillDisappear(animated)
-    }
-    
-    //MARK: - CollectionViewDelegate
-
-    
-    public override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.deselectItem(at: indexPath, animated: true)
-        collectionView.delegate?.collectionView?(collectionView, didDeselectItemAt: indexPath)
-    }
-    
-    public override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        if let itemIdentifier = diffableDataSource.itemIdentifier(for: indexPath) {
-            form.selectItem(itemIdentifier.item)
-        }
-        
-    }
-    
-    //MARK: - Configuration
-        
-    open func configureDataSource() {
-        let cell = listCellRegistration()
-        self.diffableDataSource = .init(collectionView: collectionView) { collectionView, indexPath, itemIdentifier in
-            return collectionView.dequeueConfiguredReusableCell(using: cell, for: indexPath, item: itemIdentifier)
-        }
-    }
-    
-    open func configureNavigationBar() { }
-    
-    open func configureToolbar() { }
-
-    //MARK: - Cell Registrations
-
-    open func listCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewListCell, ItemIdentifier> {
-        .init { [weak self] cell, indexPath, itemIdentifier in
-            guard let form = self?.form else { return }
-            cell.contentConfiguration = itemIdentifier.content.updated(for: cell.configurationState)
-            if form.selections.contains(itemIdentifier.item) {
-                cell.accessories = [.checkmark()]
-            } else {
-                cell.accessories = []
+    public override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
+        let oldValue = selectedItem
+        let newValue = items[indexPath.row]
+        if oldValue == newValue { return }
+        performUndoableAction { [weak self] in
+            self?.selectItem(newValue)
+        } undoAction: { [weak self] in
+            if let oldValue {
+                self?.selectItem(oldValue)
             }
         }
     }
-
-
-    //MARK: - Snapshots
     
-    open func newSnapshot() -> Snapshot {
-        var snapshot = Snapshot()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(form.listItems, toSection: .main)
-        return snapshot
-    }
-
-
-    //MARK: - Drawing
-    
-    open func refreshStaticContent() {
-        title = form.title
+    private func performUndoableAction(_ doAction: @escaping (() -> Void), undoAction: @escaping (() -> Void)) {
+        undoManager?.registerUndo(withTarget: self) {
+            $0.performUndoableAction(undoAction, undoAction: doAction)
+        }
+        doAction()
     }
     
-    open func reloadCells(animated: Bool) {
-        if #available(iOS 15, *) {
-            if animated {
-                self.diffableDataSource.apply(newSnapshot(), animatingDifferences: true)
-            } else {
-                self.diffableDataSource.applySnapshotUsingReloadData(newSnapshot())
-            }
-        } else {
-            self.diffableDataSource.apply(newSnapshot(), animatingDifferences: animated)
+    private func selectItem(_ item: T) {
+        selectedItem = item
+        tableView.reloadData()
+        if selectionTrigger == .continuously {
+            onSelection?(item)
         }
     }
+}
+
+
+
+public extension MKFormPickerViewController {
     
+    func setTitle(_ title: String) -> Self {
+        self.title = title
+        return self
+    }
+    
+    func show(in viewController: UIViewController) {
+        viewController.show(self, sender: nil)
+    }
+}
+
+public extension MKFormPickerViewController where T : BinaryInteger, T : Strideable, T.Stride == Int {
+    
+    static func numberPicker(style: UITableView.Style = .insetGrouped, _ range: ClosedRange<T>, selected: T, onSelection: @escaping ((T) -> Void)) -> MKFormPickerViewController<T> {
+        let items = Array<T>(range.map { $0 } )
+        return .init(style: style, items: items, selected: selected) { i in
+                .cell().withText("\(i)")
+        } onSelection: { i in
+            onSelection(i)
+        }
+    }
+
 
     
 }

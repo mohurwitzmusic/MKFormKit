@@ -2,10 +2,11 @@ import UIKit
 import Combine
 
 
-
-open class MKFormCell: UITableViewCell, MKFormCellObservable, MKFormListCellConfigurable {
+open class MKFormCell: UITableViewCell, UpdatesConfigurationOnObjectWillChange {
     
-    private var didConfigure = false
+    @objc dynamic private var didConfigure = false
+    
+    open var observedObject: AnyCancellable?
 
     open override var isUserInteractionEnabled: Bool {
         didSet {
@@ -46,7 +47,6 @@ open class MKFormCell: UITableViewCell, MKFormCellObservable, MKFormListCellConf
         }
     }
     
-    open var cancellable: AnyCancellable?
     
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -66,6 +66,7 @@ open class MKFormCell: UITableViewCell, MKFormCellObservable, MKFormListCellConf
         super.layoutSubviews()
         layoutAccessoryIfNeeded()
     }
+
     
     /// Use to inject an initial configuration. This is only called once.
     
@@ -131,12 +132,13 @@ open class MKFormCell: UITableViewCell, MKFormCellObservable, MKFormListCellConf
     open override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         if let hitTestingView {
             if hitTestingView.frame.contains(point) {
-                return super.hitTest(point, with: event)
+                return hitTestingView
             }
             return nil
         }
         return super.hitTest(point, with: event)
     }
+    
     
 }
 
@@ -151,6 +153,7 @@ public extension MKFormCell {
     }
 
 }
+
 
 
 

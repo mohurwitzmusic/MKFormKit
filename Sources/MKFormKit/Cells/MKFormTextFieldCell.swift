@@ -33,7 +33,13 @@ public class MKFormTextFieldCell: MKFormCell, UITextFieldDelegate {
         switch configuration {
         case .fullWidth:
             contentView.addSubview(textField)
-            textField.constrainToLayoutGuide(contentView.layoutMarginsGuide)
+            textField.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                textField.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
+                textField.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
+                textField.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
+                textField.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor)
+            ])
         case .accessory(let size):
             self.accessoryView = textField
             textField.textAlignment = .right

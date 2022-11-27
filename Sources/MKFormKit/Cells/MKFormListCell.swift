@@ -13,5 +13,4 @@ open class MKFormListCell: MKFormCell {
         self.accessoryType = accessory
     }
     
-    
 }
