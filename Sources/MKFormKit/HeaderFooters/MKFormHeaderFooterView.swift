@@ -21,19 +21,4 @@ open class MKFormHeaderFooterView: UITableViewHeaderFooterView, UpdatesConfigura
     
 }
 
-public extension MKFormHeaderFooterView {
-    
-    convenience init(text: String, imageSystemName: String? = nil) {
-        self.init(reuseIdentifier: nil)
-        var content = UIListContentConfiguration.groupedHeader().withText(text)
-        if let imageSystemName {
-            content = content.withImage(systemName: imageSystemName)
-                .withImageTintColor(content.textProperties.color)
-                .withSymbolConfiguration(.init(scale: .small))
-                .withImageToTextPadding(4)
-        }
-        self.contentConfiguration = content
-    }
-    
-}
 

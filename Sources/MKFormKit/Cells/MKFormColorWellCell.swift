@@ -1,21 +1,33 @@
 import UIKit
 import Combine
 
-open class MKFormColorPickerCell: MKFormCell {
+open class MKFormColorWellCell: MKFormCell {
+    
+    public func colorPickerViewControllerDidFinish(_ viewController: UIColorPickerViewController) {
+        print("Finished")
+    }
     
     private var lastSentColor: UIColor?
-    public let colorWell = UIColorWell()
-    public var colorWellValueChangedHandler: ((MKFormColorPickerCell) -> Void)?
+    private let tapGesture = UITapGestureRecognizer()
+    public var colorWell = UIColorWell()
+    public var colorWellValueChangedHandler: ((MKFormColorWellCell) -> Void)?
+ 
     
     open override func setup() {
         selectionStyle = .none
         accessoryView = colorWell
+        colorWell.supportsAlpha = false
         colorWell.addTarget(self, action: #selector(_colorWellValueChanged), for: .valueChanged)
     }
+    
 
+    convenience init(title: String, subtitle: String? = nil, imageSystemName: String? = nil, supportsAlpha: Bool = false) {
+        self.init(title: title, subtitle: subtitle, imageSystemName: imageSystemName)
+        self.colorWell.supportsAlpha = supportsAlpha
+    }
 
     @discardableResult
-    open func onColorWellValueChanged<T: AnyObject>(target: T, handler: @escaping ((T, MKFormColorPickerCell) -> Void)) -> Self {
+    open func onColorWellValueChanged<T: AnyObject>(target: T, handler: @escaping ((T, MKFormColorWellCell) -> Void)) -> Self {
         self.colorWellValueChangedHandler =  { [weak target] cell in
             guard let target else { return }
             handler(target, cell)
@@ -29,7 +41,7 @@ open class MKFormColorPickerCell: MKFormCell {
         lastSentColor = colorWell.selectedColor
         colorWellValueChangedHandler?(self)
     }
-    
+
 }
 
 
@@ -66,3 +78,4 @@ fileprivate extension UIColor {
         }
     }
 }
+

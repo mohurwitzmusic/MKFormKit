@@ -1,21 +1,7 @@
 import UIKit
 import Combine
 
-extension UIViewController {
-    
-    public func addUndoButtons(undoManager: UndoManager) {
-        var items = self.toolbarItems ?? []
-        for item in items {
-            if item is UIBarButtonItem.UndoButton {
-                return
-            }
-        }
-        let buttons = UIBarButtonItem.undoButtons(undoManager: undoManager)
-        items.insert(buttons.undo, at: 0)
-        items.insert(buttons.redo, at: 1)
-        self.toolbarItems = items
-    }
-}
+
 
 public extension UIBarButtonItem {
     
@@ -32,7 +18,7 @@ public extension UIBarButtonItem {
         return (make(.undo, undoManager: undoManager), make(.redo, undoManager: undoManager))
     }
     
-    class UndoButton: UIBarButtonItem {
+    private class UndoButton: UIBarButtonItem {
         
         private var cancellable: AnyCancellable?
         

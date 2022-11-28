@@ -7,7 +7,8 @@ open class MKFormSliderCell: MKFormCell {
     
     open var sliderValueChangedHandler: ((MKFormSliderCell) -> Void)?
     open var sliderTouchesEndedHandler: ((MKFormSliderCell) -> Void)?
-    
+    open var sliderTouchesBeganHandler: ((MKFormSliderCell) -> Void)?
+
     open override func setup() {
         selectionStyle = .none
         contentView.addSubview(slider)
@@ -18,11 +19,20 @@ open class MKFormSliderCell: MKFormCell {
             slider.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
             slider.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor)
         ])
+        slider.addTarget(self, action: #selector(_sliderTouchDown), for: .touchDown)
         slider.addTarget(self, action: #selector(_sliderValueChanged), for: .valueChanged)
         slider.addTarget(self, action: #selector(_sliderTouchUp), for: .touchUpInside)
         slider.addTarget(self, action: #selector(_sliderTouchUp), for: .touchUpOutside)
     }
     
+    @discardableResult
+    open func onTouchesBegan<T: AnyObject>(target: T, handler: @escaping ((T, MKFormSliderCell) -> Void)) -> Self {
+        self.sliderTouchesBeganHandler =  { [weak target] cell in
+            guard let target else { return }
+            handler(target, cell)
+        }
+        return self
+    }
     
     @discardableResult
     open func onValueChanged<T: AnyObject>(target: T, handler: @escaping ((T, MKFormSliderCell) -> Void)) -> Self {
@@ -41,6 +51,7 @@ open class MKFormSliderCell: MKFormCell {
         }
         return self
     }
+    
 
     @objc private func _sliderValueChanged() {
         sliderValueChangedHandler?(self)
@@ -48,6 +59,11 @@ open class MKFormSliderCell: MKFormCell {
     
     @objc private func _sliderTouchUp() {
         sliderTouchesEndedHandler?(self)
+    }
+    
+    
+    @objc private func _sliderTouchDown() {
+        sliderTouchesBeganHandler?(self)
     }
     
 }

@@ -15,14 +15,14 @@ public class MKFormTextFieldCell: MKFormCell, UITextFieldDelegate {
     public var textFieldShouldChangeCharactersInRangeHandler: ((MKFormTextFieldCell, NSRange, String) -> Bool)?
     public var textFieldDidEndEditingHandler: ((MKFormTextFieldCell) -> Void)?
     public var textFieldDidBeginEditingHandler: ((MKFormTextFieldCell) -> Void)?
-    
+    public var textFieldEditingChangedHandler: ((MKFormTextFieldCell) -> Void)?
     
     public init(_ configuration: Configuration) {
         self.configuration = configuration
         super.init(style: .default, reuseIdentifier: nil)
     }
     
-    
+
     public required init?(coder: NSCoder) {
         self.configuration = .fullWidth
         super.init(coder: coder)
@@ -49,6 +49,7 @@ public class MKFormTextFieldCell: MKFormCell, UITextFieldDelegate {
             }
         }
         textField.delegate = self
+        textField.addTarget(self, action: #selector(textFieldValueChanged), for: .editingChanged)
     }
 
     @discardableResult
@@ -88,6 +89,15 @@ public class MKFormTextFieldCell: MKFormCell, UITextFieldDelegate {
         }
         return self
     }
+    
+    @discardableResult
+    public func onTextFieldEditingChanged<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell) -> Void)) -> Self {
+        self.textFieldEditingChangedHandler = { [weak self, weak target] _ in
+            guard let self, let target else { return }
+            handler(target, self)
+        }
+        return self
+    }
 
         
     public override func updateConfiguration(using state: UICellConfigurationState) {
@@ -98,6 +108,11 @@ public class MKFormTextFieldCell: MKFormCell, UITextFieldDelegate {
             super.updateConfiguration(using: state)
         }
     }
+    
+    @objc private func textFieldValueChanged(_ sender: UITextField) {
+        self.textFieldEditingChangedHandler?(self)
+    }
+    
 }
 
 

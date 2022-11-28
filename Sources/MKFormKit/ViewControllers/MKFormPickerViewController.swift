@@ -2,22 +2,21 @@ import UIKit
 
 public class MKFormPickerViewController<T: Equatable>: UITableViewController {
     
-    public init(style: UITableView.Style = .insetGrouped, items: [T], selected: T, cellConfiguration: @escaping ((T) -> UIListContentConfiguration), onSelection: @escaping (T) -> Void) {
+    public init(style: UITableView.Style = .plain, title: String = "", items: [T], selected: T, cellConfiguration: @escaping ((T) -> UIListContentConfiguration)) {
+        guard items.count > 0 else {
+            fatalError("The items can't be empty")
+        }
         guard items.contains(selected) else {
-            fatalError()
+            fatalError("The selected item was not one of the available items")
         }
         self.items = items
         self.selectedItem = selected
         self.cellConfiguration = cellConfiguration
-        self.onSelection = onSelection
         super.init(style: style)
+        self.title = title
     }
-    
-    public enum SelectionTrigger {
-        case continuously
-        case onDisappear
-    }
-    
+
+
     private var _undoManager: UndoManager?
     
     public override var undoManager: UndoManager? {
@@ -28,19 +27,10 @@ public class MKFormPickerViewController<T: Equatable>: UITableViewController {
     private var items: [T] = []
     private var selectedItem: T!
     private var cellConfiguration: ((T) -> UIListContentConfiguration) = { _ in return .cell() }
-    private var onSelection: ((T) -> Void)?
-    public var selectionTrigger = SelectionTrigger.continuously
-    public var onWillDissapear: ((T) -> Void)?
+    private var selectionHandler: ((T) -> Void)?
+    public var willDisappearHandler: ((T) -> Void)?
     
-    public func enableUndoRegistration(_ enabled: Bool) {
-        if enabled {
-            _undoManager = .init()
-            addUndoButtons(undoManager: undoManager!)
-        } else {
-            _undoManager = nil
-            toolbarItems = []
-        }
-    }
+  
     
     public override func numberOfSections(in tableView: UITableView) -> Int {
         1
@@ -66,7 +56,7 @@ public class MKFormPickerViewController<T: Equatable>: UITableViewController {
     
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        onWillDissapear?(selectedItem)
+        willDisappearHandler?(selectedItem)
     }
     
     
@@ -98,9 +88,7 @@ public class MKFormPickerViewController<T: Equatable>: UITableViewController {
     private func selectItem(_ item: T) {
         selectedItem = item
         tableView.reloadData()
-        if selectionTrigger == .continuously {
-            onSelection?(item)
-        }
+        selectionHandler?(item)
     }
 }
 
@@ -108,24 +96,66 @@ public class MKFormPickerViewController<T: Equatable>: UITableViewController {
 
 public extension MKFormPickerViewController {
     
+    @discardableResult
+    func onSelection(_ handler: @escaping ((T) -> Void)) -> Self {
+        self.selectionHandler = handler
+        return self
+    }
+    
+    @discardableResult
+    func onSelection<Target: AnyObject>(target: Target, _ handler: @escaping ((Target, T) -> Void)) -> Self {
+        self.selectionHandler = { [weak target] selection in
+            guard let target else { return }
+            handler(target, selection)
+        }
+        return self
+    }
+    
+    @discardableResult
+    func onWillDisappear(_ handler: @escaping ((T) -> Void)) -> Self {
+        self.willDisappearHandler = handler
+        return self
+    }
+    
+    @discardableResult
+    func onWillDisappear<Target: AnyObject>(target: Target, _ handler: @escaping ((Target, T) -> Void)) -> Self {
+        self.willDisappearHandler = { [weak target] selection in
+            guard let target else { return }
+            handler(target, selection)
+        }
+        return self
+    }
+    
+    @discardableResult
+    func enableUndo(_ enabled: Bool) -> Self {
+        if enabled {
+            _undoManager = .init()
+            let undoButtons = UIBarButtonItem.undoButtons(undoManager: undoManager!)
+            self.toolbarItems = [undoButtons.undo, undoButtons.redo]
+        } else {
+            _undoManager = nil
+            toolbarItems = []
+        }
+        return self
+    }
+
+    func show(in viewController: UIViewController, sender: Any? = nil) {
+        viewController.show(self, sender: sender)
+    }
+    
     func setTitle(_ title: String) -> Self {
         self.title = title
         return self
     }
     
-    func show(in viewController: UIViewController) {
-        viewController.show(self, sender: nil)
-    }
 }
 
 public extension MKFormPickerViewController where T : BinaryInteger, T : Strideable, T.Stride == Int {
     
-    static func numberPicker(style: UITableView.Style = .insetGrouped, _ range: ClosedRange<T>, selected: T, onSelection: @escaping ((T) -> Void)) -> MKFormPickerViewController<T> {
+    static func numberPicker(title: String = "", style: UITableView.Style = .plain, _ range: ClosedRange<T>, selected: T) -> MKFormPickerViewController<T> {
         let items = Array<T>(range.map { $0 } )
-        return .init(style: style, items: items, selected: selected) { i in
+        return .init(style: style, title: title, items: items, selected: selected) { i in
                 .cell().withText("\(i)")
-        } onSelection: { i in
-            onSelection(i)
         }
     }
 
