@@ -54,47 +54,48 @@ public class MKFormTextFieldCell: MKFormCell, UITextFieldDelegate {
 
     @discardableResult
     public func onTextFieldShouldReturn<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell) -> Bool)) -> Self {
-        self.textFieldShouldReturnHandler = { [weak target, weak self] _ in
-            guard let target, let self else {
+        self.textFieldShouldReturnHandler = { [weak target] cell in
+            guard let target else {
+                cell.textField.resignFirstResponder()
                 return true
             }
-            return handler(target, self)
+            return handler(target, cell)
         }
         return self
     }
     
     @discardableResult
     public func onTextFieldShouldCharactersInRange<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell, NSRange, String) -> Bool)) -> Self {
-        self.textFieldShouldChangeCharactersInRangeHandler = { [weak self, weak target] _, range, string in
-            guard let self, let target else { return true }
-            return handler(target, self, range, string)
+        self.textFieldShouldChangeCharactersInRangeHandler = { [weak target] cell, range, string in
+            guard let target else { return true }
+            return handler(target, cell, range, string)
         }
         return self
     }
     
     @discardableResult
     public func onTextFieldDidEndEditing<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell) -> Void)) -> Self {
-        self.textFieldDidEndEditingHandler = { [weak self, weak target] _ in
-            guard let self, let target else { return }
-            handler(target, self)
+        self.textFieldDidEndEditingHandler = { [weak target] cell in
+            guard let target else { return }
+            handler(target, cell)
         }
         return self
     }
     
     @discardableResult
     public func onTextFieldDidBeginEditing<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell) -> Void)) -> Self {
-        self.textFieldDidEndEditingHandler = { [weak self, weak target] _ in
-            guard let self, let target else { return }
-            handler(target, self)
+        self.textFieldDidEndEditingHandler = { [weak target] cell in
+            guard let target else { return }
+            handler(target, cell)
         }
         return self
     }
     
     @discardableResult
     public func onTextFieldEditingChanged<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell) -> Void)) -> Self {
-        self.textFieldEditingChangedHandler = { [weak self, weak target] _ in
-            guard let self, let target else { return }
-            handler(target, self)
+        self.textFieldEditingChangedHandler = { [weak target] cell in
+            guard let target else { return }
+            handler(target, cell)
         }
         return self
     }

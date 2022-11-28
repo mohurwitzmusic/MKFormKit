@@ -3,9 +3,7 @@ import Combine
 
 
 open class MKFormCell: UITableViewCell, UpdatesConfigurationOnObjectWillChange {
-    
-    @objc dynamic private var didConfigure = false
-    
+        
     open var observedObject: AnyCancellable?
 
     open override var isUserInteractionEnabled: Bool {
@@ -67,17 +65,6 @@ open class MKFormCell: UITableViewCell, UpdatesConfigurationOnObjectWillChange {
         layoutAccessoryIfNeeded()
     }
 
-    
-    /// Use to inject an initial configuration. This is only called once.
-    
-    @discardableResult
-    public final func configureOnce(_ configure: @escaping (MKFormCell) -> ()) -> Self {
-        if didConfigure { return self }
-        didConfigure = true
-        configure(self)
-        return self
-    }
-        
     private func layoutAccessoryIfNeeded() {
         guard let accessoryView else { return }
         let width = calculateAccessoryWidth()

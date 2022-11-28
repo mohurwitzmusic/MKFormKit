@@ -21,7 +21,6 @@ open class MKFormToggleCell: MKFormCell {
         return self
     }
     
-    
     @objc func _valueChanged() {
         toggleValueChangedHandler?(self)
     }
