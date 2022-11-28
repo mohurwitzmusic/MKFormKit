@@ -3,10 +3,6 @@ import Combine
 
 open class MKFormColorWellCell: MKFormCell {
     
-    public func colorPickerViewControllerDidFinish(_ viewController: UIColorPickerViewController) {
-        print("Finished")
-    }
-    
     private var lastSentColor: UIColor?
     private let tapGesture = UITapGestureRecognizer()
     public var colorWell = UIColorWell()
