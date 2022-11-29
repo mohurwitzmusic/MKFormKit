@@ -99,7 +99,6 @@ public class MKFormTextFieldCell: MKFormCell, UITextFieldDelegate {
         }
         return self
     }
-
         
     public override func updateConfiguration(using state: UICellConfigurationState) {
         switch configuration {
