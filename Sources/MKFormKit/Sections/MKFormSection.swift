@@ -1,8 +1,8 @@
 import UIKit
 import Combine
 
-open class MKFormSection: NSObject {
-    open var cancellable: AnyCancellable?
+open class MKFormSection: NSObject, UpdatesConfigurationOnObjectWillChange {
+    open var observedObject: AnyCancellable?
     open var header: UITableViewHeaderFooterView?
     open var cells: [UITableViewCell] = []
     open var footer: UITableViewHeaderFooterView?

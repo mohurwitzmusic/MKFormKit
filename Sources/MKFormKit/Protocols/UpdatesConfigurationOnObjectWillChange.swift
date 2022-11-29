@@ -65,7 +65,6 @@ public extension UpdatesConfigurationOnObjectWillChange where Self : UITableView
 
 public extension UpdatesConfigurationOnObjectWillChange where Self : MKFormSection {
     
-    
     /// Supply a cell `configurationUpdateHandler` to be called on `objectWillChange.
     ///
     /// - Parameters:
