@@ -21,16 +21,6 @@ open class MKFormColorButtonCell: MKFormCell {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(recognizeTapGesture))
         addGestureRecognizer(tapGesture)
     }
-
-
-    @discardableResult
-    open func onColorButtonTapped<T: ObservableObject>(target: T, handler: @escaping ((T, MKFormColorButtonCell) -> Void)) -> Self {
-        self.colorButonTappedHandler = { [weak target] cell in
-            guard let target else { return }
-            handler(target, cell)
-        }
-        return self
-    }
     
     @discardableResult
     open func onColorButtonTapped(_ handler: @escaping ((MKFormColorButtonCell) -> Void)) -> Self {

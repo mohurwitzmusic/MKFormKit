@@ -24,34 +24,7 @@ open class MKFormSliderCell: MKFormCell {
         slider.addTarget(self, action: #selector(_sliderTouchUp), for: .touchUpInside)
         slider.addTarget(self, action: #selector(_sliderTouchUp), for: .touchUpOutside)
     }
-    
-    @discardableResult
-    open func onTouchesBegan<T: AnyObject>(target: T, handler: @escaping ((T, MKFormSliderCell) -> Void)) -> Self {
-        self.sliderTouchesBeganHandler =  { [weak target] cell in
-            guard let target else { return }
-            handler(target, cell)
-        }
-        return self
-    }
-    
-    @discardableResult
-    open func onValueChanged<T: AnyObject>(target: T, handler: @escaping ((T, MKFormSliderCell) -> Void)) -> Self {
-        self.sliderValueChangedHandler =  { [weak target] cell in
-            guard let target else { return }
-            handler(target, cell)
-        }
-        return self
-    }
-    
-    @discardableResult
-    open func onTouchesEnded<T: AnyObject>(target: T, handler: @escaping ((T, MKFormSliderCell) -> Void)) -> Self {
-        self.sliderTouchesEndedHandler =  { [weak target] cell in
-            guard let target else { return }
-            handler(target, cell)
-        }
-        return self
-    }
-    
+
 
     @objc private func _sliderValueChanged() {
         sliderValueChangedHandler?(self)
@@ -64,6 +37,37 @@ open class MKFormSliderCell: MKFormCell {
     
     @objc private func _sliderTouchDown() {
         sliderTouchesBeganHandler?(self)
+    }
+    
+}
+
+public extension MKFormSliderCell {
+    
+    @discardableResult
+    func onTouchesBegan<T: AnyObject>(target: T, handler: @escaping ((T, MKFormSliderCell) -> Void)) -> Self {
+        self.sliderTouchesBeganHandler =  { [weak target] cell in
+            guard let target else { return }
+            handler(target, cell)
+        }
+        return self
+    }
+    
+    @discardableResult
+    func onValueChanged<T: AnyObject>(target: T, handler: @escaping ((T, MKFormSliderCell) -> Void)) -> Self {
+        self.sliderValueChangedHandler =  { [weak target] cell in
+            guard let target else { return }
+            handler(target, cell)
+        }
+        return self
+    }
+    
+    @discardableResult
+    func onTouchesEnded<T: AnyObject>(target: T, handler: @escaping ((T, MKFormSliderCell) -> Void)) -> Self {
+        self.sliderTouchesEndedHandler =  { [weak target] cell in
+            guard let target else { return }
+            handler(target, cell)
+        }
+        return self
     }
     
 }

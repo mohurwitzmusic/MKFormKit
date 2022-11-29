@@ -52,8 +52,19 @@ public class MKFormTextFieldCell: MKFormCell, UITextFieldDelegate {
         textField.addTarget(self, action: #selector(textFieldValueChanged), for: .editingChanged)
     }
 
+
+    
+    @objc private func textFieldValueChanged(_ sender: UITextField) {
+        self.textFieldEditingChangedHandler?(self)
+    }
+    
+}
+
+
+public extension MKFormTextFieldCell {
+    
     @discardableResult
-    public func onTextFieldShouldReturn<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell) -> Bool)) -> Self {
+    func onTextFieldShouldReturn<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell) -> Bool)) -> Self {
         self.textFieldShouldReturnHandler = { [weak target] cell in
             guard let target else {
                 cell.textField.resignFirstResponder()
@@ -65,7 +76,7 @@ public class MKFormTextFieldCell: MKFormCell, UITextFieldDelegate {
     }
     
     @discardableResult
-    public func onTextFieldShouldCharactersInRange<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell, NSRange, String) -> Bool)) -> Self {
+    func onTextFieldShouldCharactersInRange<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell, NSRange, String) -> Bool)) -> Self {
         self.textFieldShouldChangeCharactersInRangeHandler = { [weak target] cell, range, string in
             guard let target else { return true }
             return handler(target, cell, range, string)
@@ -74,7 +85,7 @@ public class MKFormTextFieldCell: MKFormCell, UITextFieldDelegate {
     }
     
     @discardableResult
-    public func onTextFieldDidEndEditing<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell) -> Void)) -> Self {
+    func onTextFieldDidEndEditing<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell) -> Void)) -> Self {
         self.textFieldDidEndEditingHandler = { [weak target] cell in
             guard let target else { return }
             handler(target, cell)
@@ -83,7 +94,7 @@ public class MKFormTextFieldCell: MKFormCell, UITextFieldDelegate {
     }
     
     @discardableResult
-    public func onTextFieldDidBeginEditing<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell) -> Void)) -> Self {
+    func onTextFieldDidBeginEditing<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell) -> Void)) -> Self {
         self.textFieldDidEndEditingHandler = { [weak target] cell in
             guard let target else { return }
             handler(target, cell)
@@ -92,29 +103,15 @@ public class MKFormTextFieldCell: MKFormCell, UITextFieldDelegate {
     }
     
     @discardableResult
-    public func onTextFieldEditingChanged<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell) -> Void)) -> Self {
+    func onTextFieldEditingChanged<T: AnyObject>(target: T, handler: @escaping ((T, MKFormTextFieldCell) -> Void)) -> Self {
         self.textFieldEditingChangedHandler = { [weak target] cell in
             guard let target else { return }
             handler(target, cell)
         }
         return self
     }
-        
-    public override func updateConfiguration(using state: UICellConfigurationState) {
-        switch configuration {
-        case .fullWidth:
-            self.textField.text = "Hoop"
-        case .accessory:
-            super.updateConfiguration(using: state)
-        }
-    }
-    
-    @objc private func textFieldValueChanged(_ sender: UITextField) {
-        self.textFieldEditingChangedHandler?(self)
-    }
     
 }
-
 
 extension MKFormTextFieldCell {
     

@@ -1,6 +1,8 @@
 import UIKit
+import Combine
 
 open class MKFormSection: NSObject {
+    open var cancellable: AnyCancellable?
     open var header: UITableViewHeaderFooterView?
     open var cells: [UITableViewCell] = []
     open var footer: UITableViewHeaderFooterView?
@@ -17,4 +19,5 @@ where SectionIdentifierType == MKFormSection,
         }
     }
 }
+
 

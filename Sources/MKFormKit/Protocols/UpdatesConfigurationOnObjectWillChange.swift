@@ -63,5 +63,23 @@ public extension UpdatesConfigurationOnObjectWillChange where Self : UITableView
 }
 
 
+public extension UpdatesConfigurationOnObjectWillChange where Self : MKFormSection {
+    
+    
+    /// Supply a cell `configurationUpdateHandler` to be called on `objectWillChange.
+    ///
+    /// - Parameters:
+    ///     - object: The object to observe for changes. The object must conform to `ObservableObject`.
 
+    @discardableResult
+    func onObjectWillChange<T: ObservableObject>(_ object: T, handler: @escaping ((T, Self) -> Void)) -> Self {
+        self.observedObject = object.objectWillChange
+            .sink { [weak self, weak object] _ in
+                guard let self, let object else { return }
+                handler(object, self)
+            }
+        return self
+    }
+    
+}
 

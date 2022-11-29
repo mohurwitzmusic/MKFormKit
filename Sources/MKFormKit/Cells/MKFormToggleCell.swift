@@ -11,19 +11,28 @@ open class MKFormToggleCell: MKFormCell {
         accessoryView = toggle
         toggle.addTarget(self, action: #selector(_valueChanged), for: .valueChanged)
     }
+    
+    @objc func _valueChanged() {
+        toggleValueChangedHandler?(self)
+    }
+    
+}
 
+public extension MKFormToggleCell {
+    
     @discardableResult
-    open func onToggleValueChanged<T: AnyObject>(target: T, handler: @escaping ((T, MKFormToggleCell) -> Void)) -> Self {
+    func onToggleValueChanged(handler: @escaping ((MKFormToggleCell) -> Void)) -> Self {
+        self.toggleValueChangedHandler = handler
+        return self
+    }
+    
+    @discardableResult
+    func onToggleValueChanged<T: AnyObject>(target: T, handler: @escaping ((T, MKFormToggleCell) -> Void)) -> Self {
         self.toggleValueChangedHandler =  { [weak target] cell in
             guard let target else { return }
             handler(target, cell)
         }
         return self
     }
-    
-    @objc func _valueChanged() {
-        toggleValueChangedHandler?(self)
-    }
-    
     
 }

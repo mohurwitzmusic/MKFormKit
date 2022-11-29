@@ -5,14 +5,13 @@ open class MKFormViewController: UITableViewController {
     public typealias Snapshot = NSDiffableDataSourceSnapshot<MKFormSection, UITableViewCell>
     public typealias DiffableDataSource = UITableViewDiffableDataSource<MKFormSection, UITableViewCell>
     
-    open override func viewDidLoad() {
-        super.viewDidLoad()
-        dataSource.defaultRowAnimation = .middle
-    }
-    
-    open lazy var dataSource: DiffableDataSource = .init(tableView: tableView) { tableView, indexPath, cell in
-        return cell
-    }
+    open lazy var dataSource: DiffableDataSource = {
+        let ds = DiffableDataSource(tableView: tableView) { tableView, indexPath, cell in
+            return cell
+        }
+        ds.defaultRowAnimation = .middle
+        return ds
+    }()
     
     open override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         dataSource.snapshot().sectionIdentifiers[section].header

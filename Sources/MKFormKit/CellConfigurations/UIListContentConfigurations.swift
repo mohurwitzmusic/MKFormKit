@@ -4,11 +4,11 @@ public extension UIListContentConfiguration {
     
     static func formHeader(title: String, imageSystemName: String? = nil) -> UIListContentConfiguration {
         var content = UIListContentConfiguration.groupedHeader().withText(title)
+        content.imageProperties.tintColor = content.textProperties.color
+        content.imageProperties.preferredSymbolConfiguration = .init(scale: .small)
+        content.imageToTextPadding = 4
         if let imageSystemName {
-            content = content.withImage(systemName: imageSystemName)
-                .withImageTintColor(content.textProperties.color)
-                .withSymbolConfiguration(.init(scale: .small))
-                .withImageToTextPadding(4)
+            content.image = .init(systemName: imageSystemName)
         }
         return content
     }

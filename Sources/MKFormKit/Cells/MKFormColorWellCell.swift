@@ -22,14 +22,7 @@ open class MKFormColorWellCell: MKFormCell {
         self.colorWell.supportsAlpha = supportsAlpha
     }
 
-    @discardableResult
-    open func onColorWellValueChanged<T: AnyObject>(target: T, handler: @escaping ((T, MKFormColorWellCell) -> Void)) -> Self {
-        self.colorWellValueChangedHandler =  { [weak target] cell in
-            guard let target else { return }
-            handler(target, cell)
-        }
-        return self
-    }
+
     
     @objc private func _colorWellValueChanged() {
         guard let color = colorWell.selectedColor else { return }
@@ -38,6 +31,32 @@ open class MKFormColorWellCell: MKFormCell {
         colorWellValueChangedHandler?(self)
     }
 
+}
+
+public extension MKFormColorWellCell {
+    
+    @discardableResult
+    func onColorWellValueChanged<T: AnyObject>(target: T, handler: @escaping ((T, MKFormColorWellCell) -> Void)) -> Self {
+        self.colorWellValueChangedHandler =  { [weak target] cell in
+            guard let target else { return }
+            handler(target, cell)
+        }
+        return self
+    }
+    
+}
+
+public extension MKFormColorWellCell {
+    
+    @discardableResult
+    func onColorWellValueChanged<T: ObservableObject>(target: T, handler: @escaping ((T, MKFormColorWellCell) -> Void)) -> Self {
+        self.colorWellValueChangedHandler =  { [weak target] cell in
+            guard let target else { return }
+            handler(target, cell)
+        }
+        return self
+    }
+    
 }
 
 

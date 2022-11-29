@@ -15,34 +15,7 @@ open class MKFormButtonCell: MKFormCell {
         button.addTarget(self, action: #selector(_buttonTouchUpOutside), for: .touchUpOutside)
         button.configuration?.image = .init(systemName: "cloud.sun.fill")
     }
-    
-    @discardableResult
-    open func onButtonTouchDown<T: ObservableObject>(target: T, handler: @escaping ((T, MKFormButtonCell) -> Void)) -> Self {
-        self.buttonTouchDownHandler = { [weak target] cell in
-            guard let target else { return }
-            handler(target, cell)
-        }
-        return self
-    }
-    
-    @discardableResult
-    open func onButtonTouchUpInside<T: ObservableObject>(target: T, handler: @escaping ((T, MKFormButtonCell) -> Void)) -> Self {
-        self.buttonTouchUpInsideHandler = { [weak target] cell in
-            guard let target else { return }
-            handler(target, cell)
-        }
-        return self
-    }
-    
-    @discardableResult
-    open func onButtonTouchUpOutside<T: ObservableObject>(target: T, handler: @escaping ((T, MKFormButtonCell) -> Void)) -> Self {
-        self.buttonTouchUpOutsideHandler = { [weak target] cell in
-            guard let target else { return }
-            handler(target, cell)
-        }
-        return self
-    }
-    
+
     @objc private func _buttonTouchDown() {
         buttonTouchDownHandler?(self)
     }
@@ -54,5 +27,70 @@ open class MKFormButtonCell: MKFormCell {
     @objc private func _buttonTouchUpOutside() {
         buttonTouchUpOutsideHandler?(self)
     }
+    
+}
+
+
+public extension MKFormButtonCell {
+    
+    @discardableResult
+    func onButtonTouchDown<T: ObservableObject>(target: T, handler: @escaping ((T, MKFormButtonCell) -> Void)) -> Self {
+        self.buttonTouchDownHandler = { [weak target] cell in
+            guard let target else { return }
+            handler(target, cell)
+        }
+        return self
+    }
+    
+    @discardableResult
+    func onButtonTouchUpInside<T: ObservableObject>(target: T, handler: @escaping ((T, MKFormButtonCell) -> Void)) -> Self {
+        self.buttonTouchUpInsideHandler = { [weak target] cell in
+            guard let target else { return }
+            handler(target, cell)
+        }
+        return self
+    }
+    
+    @discardableResult
+    func onButtonTouchUpOutside<T: ObservableObject>(target: T, handler: @escaping ((T, MKFormButtonCell) -> Void)) -> Self {
+        self.buttonTouchUpOutsideHandler = { [weak target] cell in
+            guard let target else { return }
+            handler(target, cell)
+        }
+        return self
+    }
+    
+    
+}
+
+public extension MKFormButtonCell {
+    
+    @discardableResult
+    func onButtonTouchDown<T: AnyObject>(target: T, handler: @escaping ((T, MKFormButtonCell) -> Void)) -> Self {
+        self.buttonTouchDownHandler = { [weak target] cell in
+            guard let target else { return }
+            handler(target, cell)
+        }
+        return self
+    }
+    
+    @discardableResult
+    func onButtonTouchUpInside<T: AnyObject>(target: T, handler: @escaping ((T, MKFormButtonCell) -> Void)) -> Self {
+        self.buttonTouchUpInsideHandler = { [weak target] cell in
+            guard let target else { return }
+            handler(target, cell)
+        }
+        return self
+    }
+    
+    @discardableResult
+    func onButtonTouchUpOutside<T: AnyObject>(target: T, handler: @escaping ((T, MKFormButtonCell) -> Void)) -> Self {
+        self.buttonTouchUpOutsideHandler = { [weak target] cell in
+            guard let target else { return }
+            handler(target, cell)
+        }
+        return self
+    }
+    
     
 }
