@@ -3,7 +3,7 @@ import UIKit
 
 /// A `UITableViewCell` that manages a custom `UIContentConfiguration` which provides a secondary, right-aligned image.
 ///
-/// Call `contentConfiguration(decorating:)` directy on the cell to get the custom configuration, or initialize the configuration with `MKFormSecondaryImageCell.Configuration(decorating:)`
+/// Call `contentConfiguration(decorating:)` directy on the cell to get the custom configuration, or initialize the configuration with `MKFormSecondaryImageCell.Configuration(decorating:) to use it in any cell`
 
 open class MKFormSecondaryImageCell: MKFormCell {
 
@@ -157,32 +157,3 @@ fileprivate class TestTableViewController: UITableViewController {
     }
     
 }
-
-import SwiftUI
-
-fileprivate struct TestRepresentable: UIViewControllerRepresentable {
-    
-    func makeUIViewController(context: Context) -> some UIViewController {
-        TestTableViewController(style: .insetGrouped)
-    }
-    
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-        
-    }
-    
-}
-
-
-struct TestTableViewController_Preview: PreviewProvider {
-    
-    static var previews: some View {
-        NavigationView {
-            TestRepresentable()
-                .navigationTitle("Color")
-                .navigationBarTitleDisplayMode(.inline)
-        }
-    }
-    
-}
-
-

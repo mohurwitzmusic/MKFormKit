@@ -28,6 +28,7 @@ public extension UpdatesConfigurationOnObjectWillChange where Self : UITableView
             configurationUpdateHandler(object, cell as! Self, state)
         }
         self.observedObject = object.objectWillChange
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.setNeedsUpdateConfiguration()
             }
