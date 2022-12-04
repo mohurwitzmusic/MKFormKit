@@ -17,8 +17,8 @@ open class MKFormColorWellCell: MKFormCell {
     }
     
 
-    convenience init(title: String, subtitle: String? = nil, imageSystemName: String? = nil, supportsAlpha: Bool = false) {
-        self.init(title: title, subtitle: subtitle, imageSystemName: imageSystemName)
+    convenience init(title: String, subtitle: String? = nil, systemImage: String? = nil, supportsAlpha: Bool = false) {
+        self.init(title: title, subtitle: subtitle, systemImage: systemImage)
         self.colorWell.supportsAlpha = supportsAlpha
     }
 

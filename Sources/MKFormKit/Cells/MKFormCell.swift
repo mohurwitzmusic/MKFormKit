@@ -131,12 +131,18 @@ open class MKFormCell: UITableViewCell, UpdatesConfigurationOnObjectWillChange {
 
 public extension MKFormCell {
     
-    convenience init(title: String, subtitle: String? = nil, imageSystemName: String? = nil) {
+    convenience init(title: String, subtitle: String? = nil, systemImage: String? = nil) {
         self.init(style: .default, reuseIdentifier: nil)
         self.contentConfiguration = self.defaultContentConfiguration()
             .withText(title)
             .withSecondaryText(subtitle ?? "")
-            .withImage(systemName: imageSystemName ?? "")
+            .withImage(systemName: systemImage ?? "")
+    }
+    
+    
+    @available(*, unavailable, renamed: "MKFormCell.init(title:subtitle:systemImage:)")
+    convenience init(title: String, subtitle: String? = nil, imageSystemName: String? = nil) {
+        self.init(title: title, subtitle: subtitle, systemImage: imageSystemName)
     }
 
 }
