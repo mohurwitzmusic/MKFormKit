@@ -6,6 +6,12 @@ public protocol UITableViewCellConfigurationUpdatable where Self : UITableViewCe
 
 public extension UITableViewCellConfigurationUpdatable {
     
+    /// Sets the cell's `configurationUpdateHandler`.
+    ///
+    /// - Parameters:
+    ///     - handler: the cell's `contentConfigurationHandler`
+    ///  - Returns: the conforming type.
+    
     @discardableResult
     func setConfigurationUpdateHandler(_ handler: @escaping ((Self, UICellConfigurationState) -> Void)) -> Self {
         configurationUpdateHandler = { cell, state in
@@ -13,6 +19,16 @@ public extension UITableViewCellConfigurationUpdatable {
         }
         return self
     }
+    
+    /// Sets the cell's `configurationUpdateHandler` including an object to be passed in.
+    ///
+    /// The closure captures a weak reference to the target.
+    ///
+    ///  - Parameters:
+    ///     - target: the object to pass into the `contentConfigurationHandler`.
+    ///     - handler: the cell's `contentConfigurationHandler`, including the `target` passed into the block.
+    ///  - Returns: the conforming type.
+    ///
     
     @discardableResult
     func setConfigurationUpdateHandler<T: AnyObject>(target: T, _ handler: @escaping ((T, Self, UICellConfigurationState) -> Void)) -> Self {
@@ -22,6 +38,8 @@ public extension UITableViewCellConfigurationUpdatable {
         }
         return self
     }
+    
+
     
     
 }

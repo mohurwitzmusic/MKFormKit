@@ -19,7 +19,7 @@ public extension UpdatesConfigurationOnObjectWillChange where Self : UITableView
     ///
     /// - Parameters:
     ///     - object: The object to observe for changes. The object must conform to `ObservableObject`.
-    ///     - configurationUpdateHandler: a closure to be executed on each `objectWillChange` notification.
+    ///     - configurationUpdateHandler: a closure to be executed on each `objectWillChange` notification. The closure captures a weak reference to the object.
     
     @discardableResult
     func onObjectWillChange<T: ObservableObject>(_ object: T, configurationUpdateHandler: @escaping ((T, Self, UICellConfigurationState) -> Void)) -> Self {
@@ -45,7 +45,7 @@ public extension UpdatesConfigurationOnObjectWillChange where Self : UITableView
     ///
     /// - Parameters:
     ///     - object: The object to observe for changes. The object must conform to `ObservableObject`.
-    ///     - configurationUpdateHandler: a closure to be executed on each `objectWillChange` notification.
+    ///     - configurationUpdateHandler: a closure to be executed on each `objectWillChange` notification. The closure captures a weak reference to the object.
 
     @discardableResult
     func onObjectWillChange<T: ObservableObject>(_ object: T, configurationUpdateHandler: @escaping ((T, Self, UIViewConfigurationState) -> Void)) -> Self {
