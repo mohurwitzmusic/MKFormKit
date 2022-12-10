@@ -6,6 +6,7 @@ open class MKFormSection: NSObject, UpdatesConfigurationOnObjectWillChange {
     open var header: UITableViewHeaderFooterView?
     open var cells: [UITableViewCell] = []
     open var footer: UITableViewHeaderFooterView?
+    open func prepareForSnapshot() { }
 }
 
 extension NSDiffableDataSourceSnapshot

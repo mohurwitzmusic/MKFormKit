@@ -54,6 +54,7 @@ public extension UpdatesConfigurationOnObjectWillChange where Self : UITableView
             configurationUpdateHandler(object, cell as! Self, state)
         }
         self.observedObject = object.objectWillChange
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.setNeedsUpdateConfiguration()
             }
@@ -72,12 +73,16 @@ public extension UpdatesConfigurationOnObjectWillChange where Self : MKFormSecti
     ///     - object: The object to observe for changes. The object must conform to `ObservableObject`.
 
     @discardableResult
-    func onObjectWillChange<T: ObservableObject>(_ object: T, handler: @escaping ((T, Self) -> Void)) -> Self {
+    func onObjectWillChange<T: ObservableObject>(_ object: T, applyImmediately: Bool = true, handler: @escaping ((T, Self) -> Void)) -> Self {
         self.observedObject = object.objectWillChange
+            .receive(on: DispatchQueue.main)
             .sink { [weak self, weak object] _ in
                 guard let self, let object else { return }
                 handler(object, self)
             }
+        if applyImmediately {
+            handler(object, self)
+        }
         return self
     }
     

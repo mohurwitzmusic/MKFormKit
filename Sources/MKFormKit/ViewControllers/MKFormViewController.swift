@@ -40,14 +40,16 @@ open class MKFormViewController: UITableViewController {
 
     /// Instead of manually updating the diffable data source yourself, you can use
     /// this convenient method. This method performs additional checks to determine
-    /// if the reload should be animated or not.
+    /// if the reload should be animated or not, and calls `prepareForSnapshot` on each section.
     
     open func reload(sections: [MKFormSection]) {
         let animated = self.view.window != nil
+        sections.forEach { $0.prepareForSnapshot() }
         dataSource.apply(.init(sections: sections), animatingDifferences: animated)
     }
     
     open func reload(sections: [MKFormSection], animated: Bool) {
+        sections.forEach { $0.prepareForSnapshot() }
         dataSource.apply(.init(sections: sections), animatingDifferences: animated)
     }
 

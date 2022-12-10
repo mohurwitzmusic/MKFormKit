@@ -2,7 +2,7 @@ import UIKit
 
 public extension UIListContentConfiguration {
     
-    static func formHeader(title: String, imageSystemName: String? = nil) -> UIListContentConfiguration {
+    static func mkFormHeader(title: String, imageSystemName: String? = nil) -> UIListContentConfiguration {
         var content = UIListContentConfiguration.groupedHeader().withText(title)
         content.imageProperties.tintColor = content.textProperties.color
         content.imageProperties.preferredSymbolConfiguration = .init(scale: .small)
