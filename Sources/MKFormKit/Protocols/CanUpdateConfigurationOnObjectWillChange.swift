@@ -31,29 +31,6 @@ public extension CanSubscribeToEvents where Self : UITableViewCell {
             }.store(in: &cancellables)
         return self
     }
-    
-    /// Supply a cell `configurationUpdateHandler` to be called on the event.  The view's `setNeedsUpdateConfiguration`
-    /// will be called on each published change event.
-    ///
-    /// - Parameters:
-    ///     - publisher: The publisher to receive events from.
-    ///     - target: An object to pass into the `configurationUpdateHandler`.
-    ///     - configurationUpdateHandler: a closure to be executed on each event. The closure captures a weak reference to the target.
-    ///
-
-    @discardableResult
-    func onEvent<P: Publisher, T: AnyObject>(_ publisher: P, target: T, configurationUpdateHandler: @escaping ((T, Self, UICellConfigurationState) -> Void)) -> Self {
-        self.configurationUpdateHandler = { [weak target] cell, state in
-            guard let target else { return }
-            configurationUpdateHandler(target, cell as! Self, state)
-        }
-        publisher.receive(on: DispatchQueue.main)
-            .sink { _ in
-            } receiveValue: { [weak self] _ in
-                self?.setNeedsUpdateConfiguration()
-            }.store(in: &cancellables)
-        return self
-    }
 
 }
 
@@ -80,28 +57,6 @@ public extension CanSubscribeToEvents where Self : UITableViewHeaderFooterView {
         return self
     }
     
-    /// Supply a cell `configurationUpdateHandler` to be called on the event.  The view's `setNeedsUpdateConfiguration`
-    /// will be called on each published change event.
-    ///
-    /// - Parameters:
-    ///     - publisher: The publisher to receive events from.
-    ///     - target: An object to pass into the `configurationUpdateHandler`.
-    ///     - configurationUpdateHandler: a closure to be executed on each event. The closure captures a weak reference to the target.
-    ///
-
-    @discardableResult
-    func onEvent<P: Publisher, T: AnyObject>(_ publisher: P, target: T, configurationUpdateHandler: @escaping ((T, Self, UIViewConfigurationState) -> Void)) -> Self {
-        self.configurationUpdateHandler = { [weak target] cell, state in
-            guard let target else { return }
-            configurationUpdateHandler(target, cell as! Self, state)
-        }
-        publisher.receive(on: DispatchQueue.main)
-            .sink { _ in
-            } receiveValue: { [weak self] _ in
-                self?.setNeedsUpdateConfiguration()
-            }.store(in: &cancellables)
-        return self
-    }
 
 }
 

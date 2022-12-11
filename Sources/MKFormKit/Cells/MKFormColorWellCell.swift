@@ -21,8 +21,6 @@ open class MKFormColorWellCell: MKFormCell {
         self.init(title: title, subtitle: subtitle, systemImage: systemImage)
         self.colorWell.supportsAlpha = supportsAlpha
     }
-
-
     
     @objc private func _colorWellValueChanged() {
         guard let color = colorWell.selectedColor else { return }
