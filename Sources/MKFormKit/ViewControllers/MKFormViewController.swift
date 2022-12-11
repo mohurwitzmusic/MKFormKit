@@ -13,6 +13,7 @@ open class MKFormViewController: UITableViewController {
         return ds
     }()
     
+ 
     open override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         dataSource.snapshot().sectionIdentifiers[section].header
     }
@@ -43,8 +44,11 @@ open class MKFormViewController: UITableViewController {
     /// if the reload should be animated or not, and calls `prepareForSnapshot` on each section.
     
     open func reload(sections: [MKFormSection]) {
-        let animated = self.view.window != nil
         sections.forEach { $0.prepareForSnapshot() }
+        let oldSnapshot = dataSource.snapshot()
+        let newSnapshot = Snapshot(sections: sections)
+        var animated = oldSnapshot.itemIdentifiers.count != newSnapshot.numberOfItems
+        if view.window == nil { animated = false }
         dataSource.apply(.init(sections: sections), animatingDifferences: animated)
     }
     
@@ -54,3 +58,5 @@ open class MKFormViewController: UITableViewController {
     }
 
 }
+
+

@@ -2,9 +2,9 @@ import UIKit
 import Combine
 
 
-open class MKFormCell: UITableViewCell, UpdatesConfigurationOnObjectWillChange {
+open class MKFormCell: UITableViewCell, CanSubscribeToEvents {
         
-    open var observedObject: AnyCancellable?
+    open var cancellables = Set<AnyCancellable>()
 
     open override var isUserInteractionEnabled: Bool {
         didSet {

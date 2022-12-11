@@ -1,9 +1,9 @@
 import UIKit
 import Combine
 
-open class MKFormHeaderFooterView: UITableViewHeaderFooterView, UpdatesConfigurationOnObjectWillChange {
+open class MKFormHeaderFooterView: UITableViewHeaderFooterView, CanSubscribeToEvents {
     
-    public var observedObject: AnyCancellable?
+    public var cancellables = Set<AnyCancellable>()
     
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
